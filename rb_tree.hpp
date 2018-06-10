@@ -7,13 +7,18 @@ private:
     enum class Color { red, black };
 
     struct Node {
-        Node(T val) : left(new Node()), right(new Node()), color(Color::red), val(val) {}
-        Node() : left(nullptr), right(nullptr), color(Color::black) { /* TODO: support no default constructor for T */
+        Node(T val) : left(sentinel()), right(sentinel()), color(Color::red), val(val) {}
+        static Node* sentinel() {
+            static unsigned char sentinel[sizeof(Node)] = {0};
+            static Node* sentinel_ptr(static_cast<Node*>(static_cast<void*>(&sentinel)));
+            return sentinel_ptr;
         }
         Node *left, *right;
         Color color;
         T val;
     };
+
+    Node* root;
 
     static Node* rb_insert_fixup(Node* grandparent) {
         Node *node, *parent;
@@ -37,8 +42,8 @@ private:
             if (parent->right->color == Color::red) {
                 /* case 2 */
                 node = parent->right;
-                parent->right = new Node();
-                grandparent->left = new Node();
+                parent->right = Node::sentinel();
+                grandparent->left = Node::sentinel();
                 node->left = parent;
                 node->right = grandparent;
                 node->color = Color::black;
@@ -50,8 +55,8 @@ private:
             if (parent->left->color == Color::red) {
                 /* case 4 */
                 node = parent->left;
-                parent->left = new Node();
-                grandparent->right = new Node();
+                parent->left = Node::sentinel();
+                grandparent->right = Node::sentinel();
                 node->left = grandparent;
                 node->right = parent;
                 node->color = Color::black;
@@ -68,7 +73,7 @@ private:
                 return parent;
             }
         }
-        /* case 0 */
+        /* No fixup */
         return grandparent;
     }
 
@@ -93,16 +98,32 @@ private:
             return true;
         }
     }
-    Node* root;
+
+    static int rb_height(Node* root) {
+        int leftHeight, rightHeight;
+
+        if (!root->left) {
+            return -1;
+        } else {
+            leftHeight = rb_height(root->left);
+            rightHeight = rb_height(root->right);
+            return leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
+        }
+    }
 
 public:
-    RBTree() : root(new Node()) {}
+    RBTree() : root(Node::sentinel()) {
+        Node::sentinel()->color = Color::black;
+    }
     void insert(const T& val) {
         Node* z = new Node(val);
         root = rb_insert(root, z);
     }
     bool find(const T& val) {
         return rb_find(root, val);
+    }
+    int height(){
+       return rb_height(root);
     }
 };
 

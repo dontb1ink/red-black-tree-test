@@ -8,11 +8,23 @@
 using namespace std;
 
 BOOST_AUTO_TEST_CASE(test1) {
+
     RBTree<int> rbt;
     rbt.insert(1);
     rbt.insert(1);
     rbt.insert(1);
     rbt.insert(1);
     rbt.insert(2);
-    BOOST_TEST(rbt.find(2) == 1);
+    BOOST_TEST(rbt.find(2) == true);
+}
+
+BOOST_AUTO_TEST_CASE(testheight) {
+
+    RBTree<int> rbt;
+    rbt.insert(1);
+    rbt.insert(1);
+    rbt.insert(1);
+    rbt.insert(1);
+    rbt.insert(2);
+    BOOST_TEST(rbt.height() == 2);
 }
