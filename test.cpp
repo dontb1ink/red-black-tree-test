@@ -8,6 +8,16 @@
 using namespace std;
 
 BOOST_AUTO_TEST_CASE(test1) {
+    RBTree<int> rbt;
+    rbt.insert(1);
+    rbt.insert(2);
+    rbt.insert(5);
+    rbt.insert(3);
+    rbt.insert(4);
+    BOOST_TEST(rbt.find(6) == false);
+}
+
+/* BOOST_AUTO_TEST_CASE(test1) {
 
     RBTree<int> rbt;
     rbt.insert(1);
@@ -20,4 +30,4 @@ BOOST_AUTO_TEST_CASE(test1) {
     rbt.insert(1);
     rbt.insert(2);
     BOOST_TEST(rbt.find(6) == false);
-}
+} */
