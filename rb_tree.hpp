@@ -147,6 +147,33 @@ private:
             return true;
         }
     }
+    // DELETE
+    static Node* rb_delete_fixup(Node* grandparent) {
+        return grandparent;
+    }
+
+    static Node* rb_delete(Node* root, const T& val) {
+        if (!root->left) {
+            // pass
+        } else if (val < root->get_val()) {
+            root->left = rb_delete(root->left, val);
+            root->left->parent = root;
+            root = rb_delete_fixup(root);
+        } else if (val > root->get_val()){
+            root->right = rb_delete(root->right, val);
+            root->right->parent = root;
+            root = rb_delete_fixup(root);
+        } else{
+            if(!root->left->left){
+                root = root->right;
+            }else if(!root->right->left){
+                root = root->left;
+            } else {
+                // TODO: remove largest node in left subtree and set root's val to that
+            }
+        }
+        return root;
+    }
 
 public:
     RBTree() : root(new SentinelNode()) {}
@@ -157,6 +184,9 @@ public:
         root->color = Color::black;
     }
     bool find(const T& val) { return rb_find(root, val); }
+    void remove(const T& val) {
+        root = rb_delete(root, val);
+    }
 };
 
 #endif
