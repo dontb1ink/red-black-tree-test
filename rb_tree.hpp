@@ -20,11 +20,13 @@ private:
         }
         // TODO: Remove get_val when debugging is complete
         virtual T get_val() { throw std::runtime_error("Not an implmentation of Node"); }
+        virtual void set_val(const T val) { throw std::runtime_error("Not an implmentation of Node"); }
     };
     class SentinelNode : public Node {
     public:
         SentinelNode() : Node(nullptr, nullptr, Color::black) {}
         T get_val() { throw std::runtime_error("Accessing sentinel value"); }
+        void set_val(const T val) { throw std::runtime_error("Setting sentinel value"); }
     };
     class ValueNode : public Node {
     private:
@@ -33,6 +35,7 @@ private:
     public:
         ValueNode(T val) : Node(Node::sentinel(), Node::sentinel(), Color::red), val(val) {}
         T get_val() { return val; }
+        void set_val(const T val) { this->val = val; }
     };
     /* ===== RBT ===== */
     Node* root;
@@ -147,29 +150,34 @@ private:
             return true;
         }
     }
-    // DELETE
-    static Node* rb_delete_fixup(Node* grandparent) {
-        return grandparent;
-    }
-
+    /* ===== Delete ===== */
     static Node* rb_delete(Node* root, const T& val) {
         if (!root->left) {
             // pass
         } else if (val < root->get_val()) {
             root->left = rb_delete(root->left, val);
             root->left->parent = root;
-            root = rb_delete_fixup(root);
-        } else if (val > root->get_val()){
+        } else if (val > root->get_val()) {
             root->right = rb_delete(root->right, val);
             root->right->parent = root;
-            root = rb_delete_fixup(root);
-        } else{
-            if(!root->left->left){
+        } else {
+            if (!root->left->left) {
+                root->right->parent = root->parent;
                 root = root->right;
-            }else if(!root->right->left){
+            } else if (!root->right->left) {
+                root->left->parent = root->parent;
                 root = root->left;
             } else {
-                // TODO: remove largest node in left subtree and set root's val to that
+                Node* target = root->left;
+                while (target->right->left) {
+                    target = target->right;
+                }
+                if (target->parent->left == target) {
+                    target->parent->left = target->left;
+                } else {
+                    target->parent->right = target->left;
+                }
+                root->set_val(target->get_val());
             }
         }
         return root;
@@ -184,9 +192,7 @@ public:
         root->color = Color::black;
     }
     bool find(const T& val) { return rb_find(root, val); }
-    void remove(const T& val) {
-        root = rb_delete(root, val);
-    }
+    void remove(const T& val) { root = rb_delete(root, val); }
 };
 
 #endif

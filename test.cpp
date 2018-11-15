@@ -10,8 +10,10 @@ using namespace std;
 BOOST_AUTO_TEST_CASE(test1) {
     RBTree<int> rbt;
     rbt.insert(1);
+    rbt.insert(2);
+    rbt.insert(3);
     rbt.remove(2);
-    BOOST_TEST(rbt.find(1) == false);
+    BOOST_TEST(rbt.find(2) == false);
 }
 
 /* BOOST_AUTO_TEST_CASE(test1) {
